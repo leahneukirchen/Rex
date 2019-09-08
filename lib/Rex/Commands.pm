@@ -327,10 +327,10 @@ sub task {
   if (!$class->can($task_name_save)
     && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
   {
-    no strict 'refs'; ## no critic ProhibitNoStrict
     Rex::Logger::debug("Registering task: $task_name");
-    my $code = $_[-2];
-    *{"${class}::$task_name_save"} = sub {
+    my $code        = $_[-2];
+    my $ref_to_task = qualify_to_ref( $task_name_save, $class );
+    *{$ref_to_task} = sub {
       Rex::Logger::info("Running task $task_name on current connection");
       my $param;
 
