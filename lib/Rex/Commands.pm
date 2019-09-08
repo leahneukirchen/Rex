@@ -318,11 +318,8 @@ sub task {
     push( @_, "" );
   }
 
-  no strict 'refs'; ## no critic ProhibitNoStrict
-  no warnings;
-  push( @{"${class}::tasks"}, { name => $task_name_save, code => $_[-2] } );
-  use strict;
-  use warnings;
+  my $ref_to_tasks = qualify_to_ref( 'tasks', $class );
+  push( @{ *{$ref_to_tasks} }, { name => $task_name_save, code => $_[-2] } );
 
   $options->{'dont_register'} ||= $dont_register_tasks;
   my $task_o = Rex::TaskList->create()->create_task( $task_name, @_, $options );
