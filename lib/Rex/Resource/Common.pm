@@ -115,13 +115,13 @@ sub resource {
   }
 
   if ( exists $options->{export} && $options->{export} ) {
-    no strict 'refs'; ## no critic ProhibitNoStrict
 
     # register in caller namespace
-    push @{ $caller_pkg . "::ISA" }, "Rex::Exporter"
-      unless ( grep { $_ eq "Rex::Exporter" } @{ $caller_pkg . "::ISA" } );
-    push @{ $caller_pkg . "::EXPORT" }, $name_save;
-    use strict;
+    my $ref_to_ISA    = qualify_to_ref( 'ISA',    $caller_pkg );
+    my $ref_to_EXPORT = qualify_to_ref( 'EXPORT', $caller_pkg );
+    push @{ *{$ref_to_ISA} }, "Rex::Exporter"
+      unless ( grep { $_ eq "Rex::Exporter" } @{ *{$ref_to_ISA} } );
+    push @{ *{$ref_to_EXPORT} }, $name_save;
   }
 }
 
