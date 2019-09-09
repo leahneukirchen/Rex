@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 require Exporter;
+use Symbol;
 use base qw(Exporter);
 use vars qw($SECTION @EXPORT);
 
@@ -76,9 +77,8 @@ sub get_all {
   use Data::Dumper;
   my $r = ref($self);
 
-  no strict 'refs'; ## no critic ProhibitNoStrict
-  my @items = @{"${r}::items"};
-  use strict;
+  my $ref_to_items = qualify_to_ref( 'items', $r );
+  my @items        = @{$ref_to_items};
 
   my $ret = {};
   for my $itm (@items) {
