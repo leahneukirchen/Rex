@@ -15,6 +15,7 @@ require Exporter;
 require Rex::Config;
 use Rex::Resource;
 use Data::Dumper;
+use Symbol;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
@@ -95,25 +96,22 @@ sub resource {
   if (!$class->can($name)
     && $name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
   {
-    no strict 'refs'; ## no critic ProhibitNoStrict
     Rex::Logger::debug("Registering resource: ${class}::$name_save");
 
-    my $code = $_[-2];
-    *{"${class}::$name_save"} = $func;
-    use strict;
+    my $code            = $_[-2];
+    my $ref_to_resource = qualify_to_ref( $name_save, $class );
+    *{$ref_to_resource} = $func;
   }
   elsif ( ( $class ne "main" && $class ne "Rex::CLI" )
     && !$class->can($name_save)
     && $name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
   {
     # if not in main namespace, register the task as a sub
-    no strict 'refs'; ## no critic ProhibitNoStrict
     Rex::Logger::debug(
       "Registering resource (not main namespace): ${class}::$name_save");
-    my $code = $_[-2];
-    *{"${class}::$name_save"} = $func;
-
-    use strict;
+    my $code            = $_[-2];
+    my $ref_to_resource = qualify_to_ref( $name_save, $class );
+    *{$ref_to_resource} = $func;
   }
 
   if ( exists $options->{export} && $options->{export} ) {
