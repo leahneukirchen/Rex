@@ -86,7 +86,7 @@ sub wait_for {
 
         return 1 unless $all;
       }
-      sleep 0.1;
+      sleep 0;
     }
   } until $self->{'running'} == 0;
 }
