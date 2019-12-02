@@ -25,6 +25,7 @@ package Rex::Template;
 
 use strict;
 use warnings;
+use Symbol;
 
 # VERSION
 
@@ -38,9 +39,8 @@ our $BE_LOCAL = 1;
 sub function {
   my ( $class, $name, $code ) = @_;
 
-  no strict 'refs'; ## no critic ProhibitNoStrict
-  *{ $class . "::" . $name } = $code;
-  use strict;
+  my $ref_to_name = qualify_to_ref( 'name', $class );
+  *{$ref_to_name} = $code;
 }
 
 sub new {
