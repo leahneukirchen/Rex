@@ -1074,7 +1074,6 @@ sub import {
   read_config_file();
 }
 
-no strict 'refs'; ## no critic ProhibitNoStrict
 __PACKAGE__->register_config_handler(
   base => sub {
     my ($param) = @_;
@@ -1096,12 +1095,13 @@ __PACKAGE__->register_config_handler(
         next;
       }
 
-      $$key = $param->{$key};
+      my $ref_to_key        = qualify_to_ref( $key, __PACKAGE__ );
+      my $ref_to_key_scalar = *{$ref_to_key}{SCALAR};
+
+      ${$ref_to_key_scalar} = $param->{key};
     }
   }
 );
-
-use strict;
 
 my @set_handler =
   qw/user password private_key public_key -keyauth -passwordauth -passauth
