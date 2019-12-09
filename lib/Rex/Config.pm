@@ -30,6 +30,7 @@ use Rex::Logger;
 use YAML;
 use Data::Dumper;
 use Rex::Require;
+use Symbol;
 
 our (
   $user,                     $password,
@@ -1100,6 +1101,8 @@ __PACKAGE__->register_config_handler(
   }
 );
 
+use strict;
+
 my @set_handler =
   qw/user password private_key public_key -keyauth -passwordauth -passauth
   parallelism sudo_password connection ca cert key distributor
@@ -1121,12 +1124,13 @@ for my $hndl (@set_handler) {
       if ( $hndl eq "cert" )       { $hndl = "ca_cert"; }
       if ( $hndl eq "key" )        { $hndl = "ca_key"; }
 
-      $$hndl = $val;
+      my $ref_to_hndl        = qualify_to_ref( $hndl, __PACKAGE__ );
+      my $ref_to_hndl_scalar = *{$ref_to_hndl}{SCALAR};
+
+      ${$ref_to_hndl_scalar} = $val;
     }
   );
 }
-
-use strict;
 
 sub _home_dir {
   if ( $^O =~ m/^MSWin/ ) {
